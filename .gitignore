@@ -73,3 +73,19 @@ build/
 Thumbs.db
 ehthumbs.db
 $RECYCLE.BIN/
+
+### Local / Temporary / Custom Files ###
+# Arquivos criados acidentalmente localmente
+C
+
+# Draw.io e diagramas (Arquivos de backup e temporários)
+.*.drawio.bkp
+*.drawio.bkp
+~*.drawio
+.*.dtmp
+
+# Arquivos temporários genéricos do sistema/editores
+*.tmp
+*.bak
+*.swp
+*~
