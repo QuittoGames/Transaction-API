@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance System</title>
+    <link rel="stylesheet" href="web/style.css">
+</head>
+<body>
+    <div class="content">
+        <header>
+            <h1>Finance<span class="text-blue">System</span></h1>
+            <button id="seed-btn" class="btn-outline">Inicializar DB (Seed)</button>
+        </header>
+
+        <main class="card">
+            <h2>Nova Transação</h2>
+            <form id="transaction-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="senderId">ID Origem:</label>
+                        <input type="number" id="senderId" required placeholder="Ex: 1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="receiverId">ID Destino:</label>
+                        <input type="number" id="receiverId" required placeholder="Ex: 2">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="value">Valor (R$):</label>
+                        <input type="number" id="value" step="0.01" required placeholder="Ex: 150.50">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Categoria:</label>
+                        <select id="category">
+                            <option value="FOOD">Alimentação</option>
+                            <option value="TRANSPORT">Transporte</option>
+                            <option value="HOUSING">Moradia</option>
+                            <option value="HEALTH">Saúde</option>
+                            <option value="EDUCATION">Educação</option>
+                            <option value="LEISURE">Lazer</option>
+                            <option value="BILLS">Contas</option>
+                            <option value="OTHER">Outros</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">Criar Transação</button>
+            </form>
+
+            <div id="result-message" class="hidden"></div>
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 - Desenvolvido por Quitto</p>
+    </footer>
+
+    <script src="web/js.js"></script>
+</body>
+</html>
