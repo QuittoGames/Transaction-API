@@ -2,7 +2,9 @@ package quitto.FinaceSysthen.Controllers;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.naming.OperationNotSupportedException;
 
@@ -12,15 +14,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import quitto.FinaceSysthen.DTOs.Category.CategoryResponseDTO;
 import quitto.FinaceSysthen.DTOs.Trasactions.TransactionResponseDTO;
 import quitto.FinaceSysthen.DTOs.Trasactions.TransactionSenderDTO;
 import quitto.FinaceSysthen.Enums.Role;
+import quitto.FinaceSysthen.Models.Payment;
 import quitto.FinaceSysthen.Services.PaymentService;
 import quitto.FinaceSysthen.Services.UserService;
 import quitto.FinaceSysthen.Services.Auth.AuthService;
 
 @RestController
 public class PaymentController {
+
     @Autowired
     private PaymentService paymentService;
 
@@ -44,7 +49,7 @@ public class PaymentController {
             if (data == null) {
                 throw new RuntimeException("Invalid operation");
             }
-
+        
             UUID IndepotetencyKey = data.getInterpotecyKey();
             if (IndepotetencyKey == null) {
                 throw new RuntimeException("Invalid operation");
@@ -94,6 +99,23 @@ public class PaymentController {
                             transactionTime,
                             data != null ? data.getInterpotecyKey() : null,
                             data != null ? data.getCatorgory() : null));
+        }
+    }
+
+    @PostMapping("/list")
+    public ResponseEntity<CategoryResponseDTO> listForCategory(@RequestBody String catgoryString){
+        try {
+            if (catgoryString == null){
+                throw new RuntimeException("Invalid operation");
+            }
+            
+            List<Payment> result = paymentService.listPayments(catgoryString);
+
+            CategoryResponseDTO responseDTO = new CategoryResponseDTO(result,catgoryString);
+
+            return ResponseEntity.ok(responseDTO);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }

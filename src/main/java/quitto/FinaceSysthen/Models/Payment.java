@@ -1,7 +1,7 @@
 package quitto.FinaceSysthen.Models;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.persistence.Column;
@@ -12,6 +12,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import quitto.FinaceSysthen.Enums.Category;
 
 @Entity 
 @Table(name = "payment")
@@ -25,15 +28,27 @@ public class Payment {
     @Column(name = "amount", nullable = false, unique = false)
     private BigDecimal value;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false ,unique =  false)
-    private String category;
+    private Category category;
 
     @Column(nullable = false , unique = false)
-    private LocalDate date;
+    private LocalDateTime date;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private User payer;
+
+    public Payment(@DecimalMin("0.0") BigDecimal value, Category category, LocalDateTime date, User payer) {
+        this.value = value;
+        this.category = category;
+        this.date = date;
+        this.payer = payer;
+    }
+
+    public Payment() {
+        
+    }
 
     public Long getId() {
         return id;
@@ -47,37 +62,37 @@ public class Payment {
         return value;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 
-    public LocalDate getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
-    public User getUser() {
-        return user;
+    public User getPayer() {
+        return payer;
     }
     
     public void setValue(BigDecimal value) {
         this.value = value;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setPayer(User payer) {
+        this.payer = payer;
     } 
 
 
     @Override
     public String toString() {
-        return "Payment [id=" + id + ", value=" + value + ", category=" + category + ", date=" + date + ", user=" + user + "]";
+        return "Payment [id=" + id + ", value=" + value + ", category=" + category + ", date=" + date + ", payer=" + payer + "]";
     }
 
 }

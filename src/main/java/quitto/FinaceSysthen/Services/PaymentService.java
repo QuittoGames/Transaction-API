@@ -2,8 +2,10 @@ package quitto.FinaceSysthen.Services;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.RuntimeErrorException;
 import javax.naming.OperationNotSupportedException;
 
 import java.util.Optional;
@@ -11,7 +13,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import jakarta.persistence.CascadeType;
 import quitto.FinaceSysthen.DTOs.Trasactions.TransactionResponseDTO;
 import quitto.FinaceSysthen.DTOs.Trasactions.TransactionSenderDTO;
 import quitto.FinaceSysthen.Enums.Category;
@@ -37,29 +38,34 @@ public class PaymentService {
             Category category = data.getCatorgory() != null 
                 ? data.getCatorgory() 
                 : Category.OTHER;
-
+            
+            if (data.getReceiverId() == data.getSenderId()){
+                throw new RuntimeException("Id of sender is the same for receiver");
+            }
             if (senderOpt.isEmpty() || receiverOpt.isEmpty()) {
                 throw new RuntimeException("User not found");
             }
-
+            
             if (transactionValue == null) {
                 throw new RuntimeException("Transaction value is required");
             }
             
             User sender = senderOpt.get();
             User receiver = receiverOpt.get();
-
+            
             if (isZeroOrNegative(sender.getAmount()) || isZeroOrNegative(receiver.getAmount()) || isZeroOrNegative(transactionValue)) {
                 throw new OperationNotSupportedException("Invalid operation");
             }
-
+            
             sender.setAmount(sender.getAmount().subtract(transactionValue));
             receiver.setAmount(receiver.getAmount().add(data.getTransactionValue()));
-
+            
             LocalDateTime transactionTime = LocalDateTime.now();
-
+            Payment payment = new Payment(transactionValue, category, transactionTime, receiver);
+            
             userRepository.save(sender);
             userRepository.save(receiver);
+            paymentRepository.save(payment);
 
             return new TransactionResponseDTO(
                 "Transaction completed",
@@ -82,16 +88,26 @@ public class PaymentService {
         }
     }
 
+    public List<Payment> listPayments(String categoryString) throws RuntimeException{
+        try {
+            if (!(Category.exists(categoryString))){
+                throw new RuntimeException("Category is not valid");
+            }
+            
+            Category category = Category.valueOf(categoryString.toUpperCase());
+            return paymentRepository.findByCategory(category);
+        } catch (IllegalArgumentException exception) {
+            System.out.println("Invalid category: " + categoryString);
+            throw new RuntimeException(exception);
+        }
+    }
+
     public static boolean isZeroOrNegative(BigDecimal value) {
         return value == null || value.compareTo(BigDecimal.ZERO) <= 0;
     }
 
-    public List<Payment> getPaymentsByUserId(Long id){
-        return paymentRepository.findByUserUserId(id);
-    }
-
-    public List<Payment> findByCategory(String category){
-        return paymentRepository.findByCategory(category);
+    public List<Payment> getPaymentsByPayerId(Long id){
+        return paymentRepository.findByPayerUserId(id);
     }
 
     public List<Payment> findByDate(LocalDate date){
