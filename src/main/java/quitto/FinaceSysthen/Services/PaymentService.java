@@ -2,16 +2,15 @@ package quitto.FinaceSysthen.Services;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.management.RuntimeErrorException;
 import javax.naming.OperationNotSupportedException;
 
 import java.util.Optional;
 
+import org.aspectj.weaver.patterns.ExactAnnotationFieldTypePattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import quitto.FinaceSysthen.DTOs.Trasactions.TransactionResponseDTO;
 import quitto.FinaceSysthen.DTOs.Trasactions.TransactionSenderDTO;
@@ -30,6 +29,7 @@ public class PaymentService {
     @Autowired  
     private UserRepository userRepository;
 
+    @Transactional(rollbackFor = RuntimeException.class)
     public TransactionResponseDTO transaction(TransactionSenderDTO data) throws RuntimeException, OperationNotSupportedException{
         try {
             Optional<User> senderOpt = userRepository.findByUserId(data.getSenderId());
@@ -39,7 +39,7 @@ public class PaymentService {
                 ? data.getCatorgory() 
                 : Category.OTHER;
             
-            if (data.getReceiverId() == data.getSenderId()){
+            if (data.getReceiverId().equals(data.getSenderId())){
                 throw new RuntimeException("Id of sender is the same for receiver");
             }
             if (senderOpt.isEmpty() || receiverOpt.isEmpty()) {
@@ -53,8 +53,12 @@ public class PaymentService {
             User sender = senderOpt.get();
             User receiver = receiverOpt.get();
             
-            if (isZeroOrNegative(sender.getAmount()) || isZeroOrNegative(receiver.getAmount()) || isZeroOrNegative(transactionValue)) {
-                throw new OperationNotSupportedException("Invalid operation");
+            if (isZeroOrNegative(transactionValue)) {
+                throw new OperationNotSupportedException("Invalid transaction value");
+            }
+
+            if (sender.getAmount().compareTo(transactionValue) < 0) {
+                throw new OperationNotSupportedException("Insufficient balance");
             }
             
             sender.setAmount(sender.getAmount().subtract(transactionValue));

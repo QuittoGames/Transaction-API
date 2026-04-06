@@ -21,6 +21,18 @@ public class TransactionSenderDTO {
 
     private Category catorgory;
     
+    public TransactionSenderDTO() {
+    }
+
+    public TransactionSenderDTO(Long senderId, Long receiverId, BigDecimal transactionValue, UUID interpotecyKey,
+            Category catorgory) {
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.transactionValue = transactionValue;
+        this.interpotecyKey = interpotecyKey;
+        this.catorgory = catorgory;
+    }
+
     public Category getCatorgory() {
         return catorgory;
     }
