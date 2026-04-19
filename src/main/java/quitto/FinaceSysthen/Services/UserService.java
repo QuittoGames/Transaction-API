@@ -1,6 +1,7 @@
 package quitto.FinaceSysthen.Services;
 
 import java.math.BigDecimal;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 import quitto.FinaceSysthen.Enums.Role;
@@ -16,7 +17,23 @@ public class UserService {
     }
 
     public User createUser(String name , BigDecimal amount , Role role){
-        User user = new User(name,amount,role);
-        return userRepository.save(user);
+        try {
+            User user = new User(name,amount,role);
+            return userRepository.save(user);
+        } catch (RuntimeException runtimeException) {
+            throw runtimeException;
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public List<User> listUsers(){
+        try {
+            return userRepository.findAll();
+        } catch (RuntimeException runtimeException) {
+            throw runtimeException;
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
     }
 }

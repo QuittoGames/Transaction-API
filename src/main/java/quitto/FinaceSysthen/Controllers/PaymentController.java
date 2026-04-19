@@ -23,6 +23,10 @@ import quitto.FinaceSysthen.Services.PaymentService;
 import quitto.FinaceSysthen.Services.UserService;
 import quitto.FinaceSysthen.Services.Auth.AuthService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 @RestController
 public class PaymentController {
 
@@ -30,18 +34,9 @@ public class PaymentController {
     private PaymentService paymentService;
 
     @Autowired
-    private UserService users;
-
-    @Autowired
     private AuthService authService;
 
-    //Create mini DB for tests
-    @PostMapping("/seed")
-    public String seed() {
-        users.createUser("teste", new BigDecimal("100"), Role.USER);
-        users.createUser("teste1", new BigDecimal("100"), Role.USER);
-        return "ok";
-    }
+    private static final Logger logger = LoggerFactory.getLogger(PaymentController.class);
 
     @PostMapping("/transaction")
     public ResponseEntity<TransactionResponseDTO> transaction(@RequestBody TransactionSenderDTO data) throws RuntimeException {
@@ -63,6 +58,7 @@ public class PaymentController {
 
         } catch (OperationNotSupportedException e) {
             LocalDateTime transactionTime = LocalDateTime.now();
+            logger.error("Error in transaction controller", e);
             return ResponseEntity
                     .status(400)
                     .body(new TransactionResponseDTO(
@@ -76,6 +72,7 @@ public class PaymentController {
 
         } catch (RuntimeException e) {
             LocalDateTime transactionTime = LocalDateTime.now();
+            logger.error("Runtime error in transaction controller", e);
             return ResponseEntity
                     .status(400)
                     .body(new TransactionResponseDTO(
@@ -89,6 +86,7 @@ public class PaymentController {
 
         } catch (Exception e) {
             LocalDateTime transactionTime = LocalDateTime.now();
+            logger.error("Unexpected error in transaction controller", e);
             return ResponseEntity
                     .status(500)
                     .body(new TransactionResponseDTO(
@@ -115,6 +113,7 @@ public class PaymentController {
 
             return ResponseEntity.ok(responseDTO);
         } catch (RuntimeException e) {
+            logger.error("Error listing payments by category", e);
             return ResponseEntity.badRequest().build();
         }
     }

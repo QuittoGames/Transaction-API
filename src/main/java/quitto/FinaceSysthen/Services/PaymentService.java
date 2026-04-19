@@ -7,7 +7,8 @@ import javax.naming.OperationNotSupportedException;
 
 import java.util.Optional;
 
-import org.aspectj.weaver.patterns.ExactAnnotationFieldTypePattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,8 @@ import quitto.FinaceSysthen.Repository.UserRepository;
 
 @Service
 public class PaymentService {
+
+    private static final Logger logger = LoggerFactory.getLogger(PaymentService.class);
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -71,6 +74,8 @@ public class PaymentService {
             userRepository.save(receiver);
             paymentRepository.save(payment);
 
+            logger.debug("Transaction completed");
+
             return new TransactionResponseDTO(
                 "Transaction completed",
                 transactionValue,
@@ -81,13 +86,13 @@ public class PaymentService {
                 category
             );
         } catch (RuntimeException runtimeException) {
-            System.out.println("[ERROR] Runtime error: " + runtimeException.getMessage());
+            logger.error("[ERROR] Runtime error: {}", runtimeException.getMessage(), runtimeException);
             throw runtimeException;
         } catch (OperationNotSupportedException operationNotSupportedException) {
-            System.out.println("[ERROR] Operation not supported: " + operationNotSupportedException.getMessage());
+            logger.error("[ERROR] Operation not supported: {}", operationNotSupportedException.getMessage(), operationNotSupportedException);
             throw operationNotSupportedException;
         } catch (Exception exception) {
-            System.out.println("[ERROR] Transaction error: " + exception.getMessage());
+            logger.error("[ERROR] Transaction error: {}", exception.getMessage(), exception);
             throw new RuntimeException(exception);
         }
     }
@@ -101,7 +106,7 @@ public class PaymentService {
             Category category = Category.valueOf(categoryString.toUpperCase());
             return paymentRepository.findByCategory(category);
         } catch (IllegalArgumentException exception) {
-            System.out.println("Invalid category: " + categoryString);
+            logger.warn("Invalid category: {}", categoryString, exception);
             throw new RuntimeException(exception);
         }
     }
