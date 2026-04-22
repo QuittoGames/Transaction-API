@@ -1,10 +1,8 @@
 package quitto.FinaceSysthen.Controllers;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.naming.OperationNotSupportedException;
 
@@ -17,10 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import quitto.FinaceSysthen.DTOs.Category.CategoryResponseDTO;
 import quitto.FinaceSysthen.DTOs.Trasactions.TransactionResponseDTO;
 import quitto.FinaceSysthen.DTOs.Trasactions.TransactionSenderDTO;
-import quitto.FinaceSysthen.Enums.Role;
 import quitto.FinaceSysthen.Models.Payment;
 import quitto.FinaceSysthen.Services.PaymentService;
-import quitto.FinaceSysthen.Services.UserService;
 import quitto.FinaceSysthen.Services.Auth.AuthService;
 
 import org.slf4j.Logger;
