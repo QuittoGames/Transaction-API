@@ -16,7 +16,7 @@
 
 **Finance System** é uma API transacional desenvolvida em Spring Boot focada na segurança e integridade de transferências financeiras. Inclui controle de idempotência, validação de transações e uma interface frontend integrada.
 
-[Features](#features) • [Arquitetura](#arquitetura) • [Instalação](#instalação) • [Endpoints](#endpoints) • [Licença](#licença)
+[Features](#features) • [Arquitetura](#arquitetura-mvc-spring) • [Instalação](#instalação) • [Endpoints](#endpoints-principais) • [Licença](#licença)
 
 </div>
 
@@ -28,6 +28,7 @@
 - **Idempotência**: Controle rígido de chaves de idempotência para evitar transações duplicadas.
 - **Interface Gráfica Intuitiva**: Frontend integrado via MVC usando HTML, CSS e external JavaScript na rota base.
 - **Banco de Dados em Memória**: Configurado com banco H2 para facilitar testes e avaliações rápidas.
+- **Documentação Interativa (Swagger UI)**: Explore e teste os endpoints via Swagger em ambiente local.
 
 > **💡 Observação de Arquitetura (Treinamento):** Por se tratar de um projeto focado em estudo e treinamento, o controle de chaves de idempotência foi implementado de forma simplificada em memória, utilizando um `Set` (através de `ConcurrentHashMap.newKeySet()`) nativo do Java. Em um cenário real de produção, a boa prática seria utilizar um banco de dados em cache como o **Redis**, que permitiria escalar a aplicação (evitando problemas com múltiplas instâncias) e aplicar limpeza automática de chaves antigas através de tempo de expiração (TTL).
 
@@ -47,7 +48,8 @@
         ┌──────────▼─────────────┐
         │                        │
         │    Controllers         │
-        │    (PaymentController) │
+        │ (PaymentController)    │
+        │ (UserController)       │
         │                        │
         │  • Recebe requisições  │
         │  • Valida DTOs         │
@@ -59,7 +61,7 @@
         ┌──────────▼─────────────┐
         │                        │
         │    Services            │
-        │    (Payment, Auth)     │
+        │ (Payment, User, Auth)  │
         │                        │
         │  • Controle Idempotência│
         │  • Transferência Segura │
@@ -67,6 +69,16 @@
         └──────────┬─────────────┘
                    │
                    │  JPA / Hibernate
+                   │
+        ┌──────────▼─────────────┐
+        │                        │
+        │   Repositories (JPA)   │
+        │ (PaymentRepository)    │
+        │ (UserRepository)       │
+        │                        │
+        └──────────┬─────────────┘
+                   │
+                   │  Persistência
                    │
         ┌──────────▼─────────────┐
         │                        │
@@ -108,15 +120,18 @@ mvnw.cmd spring-boot:run
 
 Acesse a aplicação (Frontend) em: **`http://localhost:8080/`**
 
+Acesse o Swagger UI em: **`http://localhost:8080/swagger-ui/index.html`**
+
 ---
 
 ## Endpoints Principais
 
 | Método | Rota | Descrição |
 |--------|------|-----------|
-| `POST` | `/seed` | Inicializa o banco de dados com usuários de teste (ID 1 e 2 com R$100 cada). |
-| `POST` | `/transaction` | Realiza uma transferência financeira com chave de idempotência. |
-| `POST` | `/list` | Lista as transações filtradas por categoria. |
+| `POST` | `/user/seed` | Inicializa o banco com usuários de teste (seed). |
+| `GET` | `/user/listUser` | Lista usuários cadastrados. |
+| `POST` | `/payment/transaction` | Realiza uma transferência financeira com chave de idempotência. |
+| `POST` | `/payment/list` | Lista transações/pagamentos filtrados por categoria. |
 
 ---
 
@@ -137,8 +152,6 @@ MIT License
 ---
 
 <div align="center">
-
-**Construindo sistemas transacionais seguros e focados no usuário.**
 
 [⬆ Voltar ao topo](#finance-system-api)
 

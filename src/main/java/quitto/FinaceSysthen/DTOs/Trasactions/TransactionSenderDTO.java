@@ -5,20 +5,27 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import quitto.FinaceSysthen.Enums.Category;
 
+@Schema(name = "TransactionSenderDTO", description = "Request payload used to send a transaction")
 public class TransactionSenderDTO {
     @JsonAlias("senderId")
+    @Schema(description = "Sender account ID", example = "1")
     private Long senderId;
 
     @JsonAlias("receiverId")
+    @Schema(description = "Receiver account ID", example = "2")
     private Long receiverId;
 
     @JsonAlias("value")
+    @Schema(description = "Transaction amount", example = "150.75")
     private BigDecimal transactionValue;
 
+    @Schema(description = "Idempotency key used to prevent duplicate processing", format = "uuid", example = "b3b0d2a1-2c3d-4e5f-9a01-2b3c4d5e6f70")
     private UUID interpotecyKey; 
 
+    @Schema(description = "Transaction category", example = "FOOD")
     private Category catorgory;
     
     public TransactionSenderDTO() {

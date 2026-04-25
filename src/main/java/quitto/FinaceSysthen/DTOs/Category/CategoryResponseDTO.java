@@ -2,10 +2,16 @@ package quitto.FinaceSysthen.DTOs.Category;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import quitto.FinaceSysthen.Models.Payment;
 
+@Schema(name = "CategoryResponseDTO", description = "Response payload for category-based payment queries")
 public class CategoryResponseDTO {
+
+    @Schema(description = "List of payments returned by the query")
     private List<Payment> payments;
+    
+    @Schema(description = "Selected category used to filter payments", example = "FOOD")
     private String categorySelect;
 
     public CategoryResponseDTO() {

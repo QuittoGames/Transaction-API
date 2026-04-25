@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import quitto.FinaceSysthen.Enums.Role;
 import quitto.FinaceSysthen.Models.User;
 import quitto.FinaceSysthen.Services.UserService;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 
 @RestController
+@RequestMapping("/user")
 public class UserController {
     @Autowired
     private UserService usersService;
@@ -26,6 +29,10 @@ public class UserController {
 
 
     //Create mini DB for tests
+    @Operation(
+        tags = {"User"},
+        description = "Create Users in DB for tests"
+    )
     @PostMapping("/seed")
     public String seed() {
         try {
@@ -43,7 +50,11 @@ public class UserController {
         }
     }
 
-    @GetMapping("listUser")
+    @GetMapping("/listUser")
+    @Operation(
+        tags = {"User"},
+        description = "List Users in DB"
+    )
     public List<User> listUsers() {
         try {
             List<User> users = usersService.listUsers();

@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import quitto.FinaceSysthen.DTOs.Category.CategoryResponseDTO;
 import quitto.FinaceSysthen.DTOs.Trasactions.TransactionResponseDTO;
 import quitto.FinaceSysthen.DTOs.Trasactions.TransactionSenderDTO;
@@ -24,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 
 @RestController
+@RequestMapping("/payment")
 public class PaymentController {
 
     @Autowired
@@ -34,6 +37,10 @@ public class PaymentController {
 
     private static final Logger logger = LoggerFactory.getLogger(PaymentController.class);
 
+    @Operation(
+        tags = {"Transaction"}, 
+        summary = "Create transaction"
+    )
     @PostMapping("/transaction")
     public ResponseEntity<TransactionResponseDTO> transaction(@RequestBody TransactionSenderDTO data) throws RuntimeException {
         try {
@@ -97,6 +104,10 @@ public class PaymentController {
     }
 
     @PostMapping("/list")
+    @Operation(
+        tags = {"Transaction"},
+        description = "List Payments for category "
+    )
     public ResponseEntity<CategoryResponseDTO> listForCategory(@RequestBody String catgoryString){
         try {
             if (catgoryString == null){
