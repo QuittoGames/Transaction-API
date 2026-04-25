@@ -1,0 +1,18 @@
+# Build outputs
+/target/
+
+# Logs
+/logs/
+
+# IDE/editor
+/.vscode/
+
+# Git
+/.git/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env files (avoid baking secrets into build context)
+.env
