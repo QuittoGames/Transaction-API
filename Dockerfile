@@ -8,12 +8,13 @@ COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 
 RUN chmod +x mvnw \
+	&& sed -i 's/\r$//' mvnw \
 	&& ./mvnw -q -DskipTests dependency:go-offline
 
 COPY src/ src/
 
 RUN ./mvnw -DskipTests package \
-	&& JAR_FILE="$(ls -1 target/*.jar | grep -v '\.original$' | head -n 1)" \
+	&& JAR_FILE="$(find target -maxdepth 1 -type f -name '*.jar' ! -name '*.original' -print -quit)" \
 	&& test -n "$JAR_FILE" \
 	&& cp "$JAR_FILE" /workspace/app.jar
 
@@ -33,4 +34,4 @@ USER app
 
 ENV JAVA_OPTS=""
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
