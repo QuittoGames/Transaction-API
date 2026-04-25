@@ -28,6 +28,9 @@ RUN addgroup --system app \
 
 COPY --from=build /workspace/app.jar ./app.jar
 
+RUN mkdir -p /app/logs \
+	&& chown -R app:app /app
+
 EXPOSE 8080
 
 USER app
