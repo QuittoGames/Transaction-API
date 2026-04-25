@@ -36,5 +36,6 @@ EXPOSE 8080
 USER app
 
 ENV JAVA_OPTS=""
+ENV LOG_FILE="/tmp/app.log"
 
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
