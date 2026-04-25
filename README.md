@@ -122,6 +122,10 @@ Acesse a aplicação (Frontend) em: **`http://localhost:8080/`**
 
 Acesse o Swagger UI em: **`http://localhost:8080/swagger-ui/index.html`**
 
+Acesse a aplicação no Render em: **`https://transaction-api-19c1.onrender.com/`**
+
+Acesse o Swagger UI no Render em: **`https://transaction-api-19c1.onrender.com/swagger-ui/index.html`**
+
 ---
 
 ## Endpoints Principais
