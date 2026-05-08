@@ -8,6 +8,7 @@ import javax.naming.OperationNotSupportedException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import quitto.FinaceSysthen.DTOs.Category.CategoryResponseDTO;
+import quitto.FinaceSysthen.DTOs.Trasactions.PaymentResponseDTO;
 import quitto.FinaceSysthen.DTOs.Trasactions.TransactionResponseDTO;
 import quitto.FinaceSysthen.DTOs.Trasactions.TransactionSenderDTO;
-import quitto.FinaceSysthen.Models.Payment;
 import quitto.FinaceSysthen.Services.PaymentService;
 import quitto.FinaceSysthen.Services.Auth.AuthService;
 
@@ -103,7 +104,7 @@ public class PaymentController {
         }
     }
 
-    @PostMapping("/list")
+    @GetMapping("/list")
     @Operation(
         tags = {"Transaction"},
         description = "List Payments for category "
@@ -114,7 +115,7 @@ public class PaymentController {
                 throw new RuntimeException("Invalid operation");
             }
             
-            List<Payment> result = paymentService.listPayments(catgoryString);
+            List<PaymentResponseDTO> result = paymentService.listPayments(catgoryString);
 
             CategoryResponseDTO responseDTO = new CategoryResponseDTO(result,catgoryString);
 

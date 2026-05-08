@@ -3,6 +3,7 @@ package quitto.FinaceSysthen.Models;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Version;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,6 +39,9 @@ public class Payment {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User payer;
+
+    @Version
+    private Long version;
 
     public Payment(@DecimalMin("0.0") BigDecimal value, Category category, LocalDateTime date, User payer) {
         this.value = value;

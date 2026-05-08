@@ -10,9 +10,11 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import quitto.FinaceSysthen.DTOs.Trasactions.PaymentResponseDTO;
 import quitto.FinaceSysthen.DTOs.Trasactions.TransactionResponseDTO;
 import quitto.FinaceSysthen.DTOs.Trasactions.TransactionSenderDTO;
 import quitto.FinaceSysthen.Enums.Category;
@@ -32,7 +34,7 @@ public class PaymentService {
     @Autowired  
     private UserRepository userRepository;
 
-    @Transactional(rollbackFor = RuntimeException.class)
+    @Transactional
     public TransactionResponseDTO transaction(TransactionSenderDTO data) throws RuntimeException, OperationNotSupportedException{
         try {
             Optional<User> senderOpt = userRepository.findByUserId(data.getSenderId());
@@ -59,19 +61,24 @@ public class PaymentService {
             if (isZeroOrNegative(transactionValue)) {
                 throw new OperationNotSupportedException("Invalid transaction value");
             }
-
+            
             if (sender.getAmount().compareTo(transactionValue) < 0) {
                 throw new OperationNotSupportedException("Insufficient balance");
             }
             
-            sender.setAmount(sender.getAmount().subtract(transactionValue));
-            receiver.setAmount(receiver.getAmount().add(data.getTransactionValue()));
+            // sender.setAmount(sender.getAmount().subtract(transactionValue));
+            // receiver.setAmount(receiver.getAmount().add(data.getTransactionValue()));
             
+            int withdrawRusl = paymentRepository.withdraw(sender.getUserId(), transactionValue);
+            int depositResult = paymentRepository.deposit(receiver.getUserId(), transactionValue);
+            
+            if (withdrawRusl == 0 || depositResult == 0){
+                throw new OperationNotSupportedException("Failed to process transaction");
+            }
+
             LocalDateTime transactionTime = LocalDateTime.now();
-            Payment payment = new Payment(transactionValue, category, transactionTime, receiver);
             
-            userRepository.save(sender);
-            userRepository.save(receiver);
+            Payment payment = new Payment(transactionValue, category, transactionTime, receiver);
             paymentRepository.save(payment);
 
             logger.debug("Transaction completed");
@@ -85,6 +92,9 @@ public class PaymentService {
                 data.getInterpotecyKey(),
                 category
             );
+        } catch (ObjectOptimisticLockingFailureException OOLF) {
+            logger.error("[ERROR] Optimistic locking failure: {}", OOLF.getMessage(), OOLF);
+            throw OOLF;
         } catch (RuntimeException runtimeException) {
             logger.error("[ERROR] Runtime error: {}", runtimeException.getMessage(), runtimeException);
             throw runtimeException;
@@ -97,14 +107,24 @@ public class PaymentService {
         }
     }
 
-    public List<Payment> listPayments(String categoryString) throws RuntimeException{
+    public List<PaymentResponseDTO> listPayments(String categoryString) throws RuntimeException{
         try {
             if (!(Category.exists(categoryString))){
                 throw new RuntimeException("Category is not valid");
             }
             
             Category category = Category.valueOf(categoryString.toUpperCase());
-            return paymentRepository.findByCategory(category);
+            return paymentRepository.findByCategory(category)
+                .stream()
+                .map(payment -> new PaymentResponseDTO(
+                    payment.getId(),
+                    payment.getValue(),
+                    payment.getCategory(),
+                    payment.getDate(),
+                    payment.getPayer().getUserId(),
+                    payment.getPayer().getName()
+                ))
+                .toList();
         } catch (IllegalArgumentException exception) {
             logger.warn("Invalid category: {}", categoryString, exception);
             throw new RuntimeException(exception);
