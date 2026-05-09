@@ -66,13 +66,14 @@ public class PaymentService {
                 throw new OperationNotSupportedException("Insufficient balance");
             }
             
-            // sender.setAmount(sender.getAmount().subtract(transactionValue));
-            // receiver.setAmount(receiver.getAmount().add(data.getTransactionValue()));
+            int withdrawRusult = paymentRepository.withdraw(sender.getUserId(), transactionValue);
+            if (withdrawRusult == 0){
+                throw new OperationNotSupportedException("Failed to process transaction");
+            }
             
-            int withdrawRusl = paymentRepository.withdraw(sender.getUserId(), transactionValue);
             int depositResult = paymentRepository.deposit(receiver.getUserId(), transactionValue);
             
-            if (withdrawRusl == 0 || depositResult == 0){
+            if (depositResult == 0){
                 throw new OperationNotSupportedException("Failed to process transaction");
             }
 
