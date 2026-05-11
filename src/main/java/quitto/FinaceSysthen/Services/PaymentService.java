@@ -34,7 +34,7 @@ public class PaymentService {
     @Autowired  
     private UserRepository userRepository;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public TransactionResponseDTO transaction(TransactionSenderDTO data) throws RuntimeException, OperationNotSupportedException{
         try {
             Optional<User> senderOpt = userRepository.findByUserId(data.getSenderId());
