@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import quitto.FinaceSysthen.DTOs.Category.CategoryResponseDTO;
 import quitto.FinaceSysthen.DTOs.Trasactions.PaymentResponseDTO;
 import quitto.FinaceSysthen.DTOs.Trasactions.TransactionResponseDTO;
@@ -43,7 +44,7 @@ public class PaymentController {
         summary = "Create transaction"
     )
     @PostMapping("/transaction")
-    public ResponseEntity<TransactionResponseDTO> transaction(@RequestBody TransactionSenderDTO data) throws RuntimeException {
+    public ResponseEntity<TransactionResponseDTO> transaction(@RequestBody @Valid TransactionSenderDTO data) throws RuntimeException {
         try {
             if (data == null) {
                 throw new RuntimeException("Invalid operation");

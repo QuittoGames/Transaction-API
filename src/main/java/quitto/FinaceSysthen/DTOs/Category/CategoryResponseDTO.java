@@ -3,6 +3,8 @@ package quitto.FinaceSysthen.DTOs.Category;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import quitto.FinaceSysthen.DTOs.Trasactions.PaymentResponseDTO;
 
 
@@ -10,9 +12,11 @@ import quitto.FinaceSysthen.DTOs.Trasactions.PaymentResponseDTO;
 public class CategoryResponseDTO {
 
     @Schema(description = "List of payments returned by the query")
+    @NotNull(message = "Payments list must not be null")
     private List<PaymentResponseDTO> payments;
     
     @Schema(description = "Selected category used to filter payments", example = "FOOD")
+    @NotBlank(message = "Category must not be blank")
     private String categorySelect;
 
     public CategoryResponseDTO() {

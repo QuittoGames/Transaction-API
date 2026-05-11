@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,6 +28,7 @@ public class Payment {
 
     @DecimalMin("0.0")
     @Column(name = "amount", nullable = false, unique = false)
+    @NotNull
     private BigDecimal value;
 
     @Enumerated(EnumType.STRING)
@@ -38,6 +40,7 @@ public class Payment {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @NotNull
     private User payer;
 
     @Version
